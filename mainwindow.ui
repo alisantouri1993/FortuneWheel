@@ -85,8 +85,11 @@
       </item>
       <item row="1" column="1" colspan="2">
        <widget class="QSlider" name="horizontalSliderVelocity">
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
-         <number>100</number>
+         <number>200</number>
         </property>
         <property name="value">
          <number>1</number>
@@ -165,7 +168,7 @@
          <item row="0" column="1">
           <widget class="QLabel" name="label_Min">
            <property name="text">
-            <string>0</string>
+            <string>1</string>
            </property>
           </widget>
          </item>
@@ -190,7 +193,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_Max">
            <property name="text">
-            <string>100</string>
+            <string>200</string>
            </property>
           </widget>
          </item>

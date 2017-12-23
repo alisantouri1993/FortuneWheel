@@ -13,6 +13,7 @@ public slots:
     void updateHandler();
     void startStopWheel(bool state);
     void velocityChanged(int value);
+    void repaintBasedOnFiles(int value);
 signals:
     void changeSliderValue(int value);
 protected:
@@ -20,6 +21,9 @@ protected:
 private:
     QTimer *timer;
     double rotationAngle;
+
+    int filesCount = 60;
+    QStringList files;
 };
 
 #endif // LUCKCIRCLE_H

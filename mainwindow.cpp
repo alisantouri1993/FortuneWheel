@@ -30,6 +30,7 @@ void MainWindow::connectObjects()
     connect(this,&MainWindow::startStopWheel,ui->widgetWheel,&LuckCircle::startStopWheel);
     connect(this,&MainWindow::velocityChanged,ui->widgetWheel,&LuckCircle::velocityChanged);
     connect(ui->widgetWheel,&LuckCircle::changeSliderValue,this,&MainWindow::changeSliderValue);
+    connect(this,&MainWindow::filesInfo,ui->widgetWheel,&LuckCircle::repaintBasedOnFiles);
 }
 MainWindow::~MainWindow()
 {
@@ -52,6 +53,13 @@ void MainWindow::on_pushButton_clicked()
     dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
     dir.setNameFilters(QStringList()<<"*.pdf");
     QStringList entries = dir.entryList();
+    int angle = 0;
+    for(int i =0 ; i< entries.count();i++)
+    {
+        map.insert(angle,entries.at(i));
+        angle = angle + 360/entries.count();
+    }
+    emit filesInfo(entries.count());
     stringListModel->setStringList(entries);
     ui->listView->setModel(stringListModel);
 }

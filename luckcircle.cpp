@@ -18,10 +18,10 @@ void LuckCircle::updateHandler()
 {
     if(rotationAngle == 360)
     {
-        rotationAngle = 0;
+        rotationAngle = 360/filesCount;
     }
     else
-        rotationAngle = rotationAngle + (6.0);
+        rotationAngle = rotationAngle + (360/filesCount);
     update();
 }
 
@@ -42,10 +42,14 @@ void LuckCircle::startStopWheel(bool state)
 
 void LuckCircle::velocityChanged(int value)
 {
-    if(value == 0)
-        timer->stop();
-    else
-        timer->setInterval(1000/value);
+    timer->setInterval(1000/value);
+}
+
+void LuckCircle::repaintBasedOnFiles(int value)
+{
+    filesCount = value;
+    rotationAngle = 0;
+    update();
 }
 
 void LuckCircle::paintEvent(QPaintEvent *)
@@ -78,11 +82,10 @@ void LuckCircle::paintEvent(QPaintEvent *)
     painter.setFont(QFont("Arial", 5));
     painter.rotate(-90);
 
-    for (int j = 0; j < 60; ++j)
+    for (int j = 0; j < filesCount; ++j)
     {
         painter.drawLine(88, 0, 96,0);
         painter.drawText(100,0,QString::number(j+1,10));
-        painter.rotate(6.0);
+        painter.rotate(360/filesCount);
     }
-
 }

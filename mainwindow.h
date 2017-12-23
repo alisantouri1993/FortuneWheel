@@ -23,6 +23,7 @@ public slots:
 signals:
     void startStopWheel(bool state);
     void velocityChanged(int value);
+    void filesInfo(int count);
 private slots:
     void on_pushButton_clicked();
     void on_pushButtonStartStop_clicked(bool checked);   
@@ -40,6 +41,7 @@ private:
 
     QGraphicsScene *graphicScene;
     QGraphicsItem  *graphicsItem;
+    QMap<int,QString> map;
 };
 
 #endif // MAINWINDOW_H
