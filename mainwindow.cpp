@@ -47,11 +47,11 @@ void MainWindow::on_pushButton_clicked()
 #ifdef __linux__
     path = "/home/internet/Projects/Folder";
 #elif _WIN32
-
+    path = "E:/Downloads/Video";
 #endif
     QDir dir(path);
     dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
-    dir.setNameFilters(QStringList()<<"*.pdf");
+    dir.setNameFilters(QStringList()<<"*.mp4"<<"*.TS");
     QStringList entries = dir.entryList();
     int angle = 0;
     for(int i =0 ; i< entries.count();i++)
