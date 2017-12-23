@@ -31,16 +31,21 @@ void LuckCircle::startStopWheel(bool state)
     {
         timer->start();
         timer->setInterval(1000);
+        emit changeSliderValue(1);
     }
     else
+    {
         timer->stop();
+        emit changeSliderValue(0);
+    }
 }
 
 void LuckCircle::velocityChanged(int value)
 {
     if(value == 0)
         timer->stop();
-    timer->setInterval(1000/value);
+    else
+        timer->setInterval(1000/value);
 }
 
 void LuckCircle::paintEvent(QPaintEvent *)

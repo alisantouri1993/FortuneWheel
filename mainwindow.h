@@ -18,12 +18,13 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+public slots:
+    void changeSliderValue(int value);
 signals:
     void startStopWheel(bool state);
     void velocityChanged(int value);
 private slots:
     void on_pushButton_clicked();
-private slots:
     void on_pushButtonStartStop_clicked(bool checked);   
     void on_horizontalSliderVelocity_valueChanged(int value);
 

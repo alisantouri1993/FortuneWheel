@@ -29,10 +29,16 @@ void MainWindow::connectObjects()
 {
     connect(this,&MainWindow::startStopWheel,ui->widgetWheel,&LuckCircle::startStopWheel);
     connect(this,&MainWindow::velocityChanged,ui->widgetWheel,&LuckCircle::velocityChanged);
+    connect(ui->widgetWheel,&LuckCircle::changeSliderValue,this,&MainWindow::changeSliderValue);
 }
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::changeSliderValue(int value)
+{
+    ui->horizontalSliderVelocity->setValue(value);
 }
 
 void MainWindow::on_pushButton_clicked()

@@ -13,6 +13,8 @@ public slots:
     void updateHandler();
     void startStopWheel(bool state);
     void velocityChanged(int value);
+signals:
+    void changeSliderValue(int value);
 protected:
     void paintEvent(QPaintEvent *) override;
 private:
