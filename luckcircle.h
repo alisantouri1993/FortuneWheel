@@ -16,6 +16,7 @@ public slots:
     void repaintBasedOnFiles(int value);
 signals:
     void changeSliderValue(int value);
+    void finalAngle(double rotationAngle);
 protected:
     void paintEvent(QPaintEvent *) override;
 private:

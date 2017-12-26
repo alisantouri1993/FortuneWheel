@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "QDir"
+#include "QKeyEvent"
 #include "QDebug"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -9,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    qApp->installEventFilter(this);
     init();
     createObjects();
     connectObjects();
@@ -22,7 +24,7 @@ void MainWindow::init()
 
 void MainWindow::createObjects()
 {
-
+    movieProcess = new QProcess(this);
 }
 
 void MainWindow::connectObjects()
@@ -42,6 +44,19 @@ void MainWindow::changeSliderValue(int value)
     ui->horizontalSliderVelocity->setValue(value);
 }
 
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
+        if(keyEvent->text() == "s")
+        {
+            on_pushButtonStartStop_clicked(false);
+        }
+    }
+    return false;
+}
+
 void MainWindow::on_pushButton_clicked()
 {
 #ifdef __linux__
@@ -50,7 +65,7 @@ void MainWindow::on_pushButton_clicked()
     path = "E:/Downloads/Video";
 #endif
     QDir dir(path);
-    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
     dir.setNameFilters(QStringList()<<"*.mp4"<<"*.TS");
     QStringList entries = dir.entryList();
     int angle = 0;
@@ -81,4 +96,11 @@ void MainWindow::on_pushButtonStartStop_clicked(bool checked)
 void MainWindow::on_horizontalSliderVelocity_valueChanged(int value)
 {
     emit velocityChanged(value);
+}
+
+void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
+{
+    QString openedFile =index.data().toString();
+    QString path = "E:\\Downloads\\Video\\";
+    movieProcess->start("C:/KMPlayer/KMPlayer.exe",QStringList()<<path+openedFile);
 }

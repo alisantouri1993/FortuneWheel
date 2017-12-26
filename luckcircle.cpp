@@ -58,7 +58,7 @@ void LuckCircle::paintEvent(QPaintEvent *)
     {
         QPoint(7, 8),
         QPoint(-7, 8),
-        QPoint(0, -80)
+        QPoint(0, -75)
     };
     QColor handlerColor(100, 50, 127);
     QColor choicesColor(0, 127, 127, 191);
@@ -84,8 +84,8 @@ void LuckCircle::paintEvent(QPaintEvent *)
 
     for (int j = 0; j < filesCount; ++j)
     {
-        painter.drawLine(88, 0, 96,0);
-        painter.drawText(100,0,QString::number(j+1,10));
+        painter.drawLine(83, 0, 91,0);
+        painter.drawText(93,0,QString::number(j+1,10));
         painter.rotate(360/filesCount);
     }
 }
