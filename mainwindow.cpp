@@ -4,6 +4,8 @@
 #include "QDir"
 #include "QKeyEvent"
 #include "QDebug"
+#include <QFileDialog>
+#include <QCollator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
@@ -33,6 +35,8 @@ void MainWindow::connectObjects()
     connect(this,&MainWindow::velocityChanged,ui->widgetWheel,&LuckCircle::velocityChanged);
     connect(ui->widgetWheel,&LuckCircle::changeSliderValue,this,&MainWindow::changeSliderValue);
     connect(this,&MainWindow::filesInfo,ui->widgetWheel,&LuckCircle::repaintBasedOnFiles);
+    connect(ui->widgetWheel,&LuckCircle::enableControls,this,&MainWindow::enableControls);
+    connect(ui->widgetWheel,&LuckCircle::finalAngle,this,&MainWindow::finalAngle);
 }
 MainWindow::~MainWindow()
 {
@@ -44,14 +48,36 @@ void MainWindow::changeSliderValue(int value)
     ui->horizontalSliderVelocity->setValue(value);
 }
 
+void MainWindow::enableControls()
+{
+    ui->pushButtonStartStop->setEnabled(true);
+    ui->horizontalSliderVelocity->setEnabled(true);
+}
+
+void MainWindow::finalAngle(double rotationAngle)
+{
+    if(!map.isEmpty())
+    {
+        QString openedFile =path +"\\"+map[rotationAngle];
+        movieProcess->start("C:/KMPlayer/KMPlayer.exe",QStringList()<<openedFile);
+    }
+}
+
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
-        if(keyEvent->text() == "s")
+        if(keyEvent->text() == "s" || keyEvent->text() == "S")
         {
-            on_pushButtonStartStop_clicked(false);
+            if(ui->pushButtonStartStop->isChecked())
+            {
+                ui->pushButtonStartStop->setText("Start");
+                ui->pushButtonStartStop->setDisabled(true);
+                ui->horizontalSliderVelocity->setDisabled(true);
+                ui->pushButtonStartStop->setChecked(false);
+                emit startStopWheel(false);
+            }
         }
     }
     return false;
@@ -59,24 +85,42 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::on_pushButton_clicked()
 {
-#ifdef __linux__
-    path = "/home/internet/Projects/Folder";
-#elif _WIN32
-    path = "E:/Downloads/Video";
-#endif
-    QDir dir(path);
-    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
-    dir.setNameFilters(QStringList()<<"*.mp4"<<"*.TS");
-    QStringList entries = dir.entryList();
-    int angle = 0;
-    for(int i =0 ; i< entries.count();i++)
+    path = QFileDialog::getExistingDirectory(this,"Select The Folder ...",QDir::currentPath());
+    ui->lineEditFolderAdd->setText(path);
+    //#ifdef __linux__
+    //    path = "/home/internet/Projects/Folder";
+    //#elif _WIN32
+    //    //path = "E:/Downloads/Video";
+    //#endif
+    if(!path.isEmpty())
     {
-        map.insert(angle,entries.at(i));
-        angle = angle + 360/entries.count();
+        QDir dir(path);
+        dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
+        dir.setSorting(QDir::NoSort);
+        dir.setNameFilters(QStringList()<<"*.mp4");
+        QStringList entries = dir.entryList();
+
+        QCollator collator;
+        collator.setNumericMode(true);
+
+        std::sort(
+                    entries.begin(),
+                    entries.end(),
+                    [&collator](const QString &name1, const QString &name2)
+        {
+            return collator.compare(name1, name2) < 0;
+        });
+
+        int angle = 0;
+        for(int i =0 ; i< entries.count();i++)
+        {
+            map.insert(angle,entries.at(i));
+            angle = angle + 360/entries.count();
+        }
+        emit filesInfo(entries.count());
+        stringListModel->setStringList(entries);
+        ui->listView->setModel(stringListModel);
     }
-    emit filesInfo(entries.count());
-    stringListModel->setStringList(entries);
-    ui->listView->setModel(stringListModel);
 }
 
 void MainWindow::on_pushButtonStartStop_clicked(bool checked)
@@ -89,6 +133,8 @@ void MainWindow::on_pushButtonStartStop_clicked(bool checked)
     else
     {
         ui->pushButtonStartStop->setText("Start");
+        ui->pushButtonStartStop->setDisabled(true);
+        ui->horizontalSliderVelocity->setDisabled(true);
         emit startStopWheel(false);
     }
 }
@@ -100,7 +146,6 @@ void MainWindow::on_horizontalSliderVelocity_valueChanged(int value)
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
 {
-    QString openedFile =index.data().toString();
-    QString path = "E:\\Downloads\\Video\\";
-    movieProcess->start("C:/KMPlayer/KMPlayer.exe",QStringList()<<path+openedFile);
+    QString openedFile =path +"\\"+index.data().toString();
+    movieProcess->start("C:/KMPlayer/KMPlayer.exe",QStringList()<<openedFile);
 }

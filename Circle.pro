@@ -3,8 +3,11 @@
 # Project created by QtCreator 2017-12-13T13:13:29
 #
 #-------------------------------------------------
+include($$_PRO_FILE_PWD_/deploy.pri)
 
 QT       += core gui
+
+CONFIG+=windeployqt
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

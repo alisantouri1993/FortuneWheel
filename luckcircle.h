@@ -11,16 +11,19 @@ public:
 
 public slots:
     void updateHandler();
+    void reduceSpeed();
     void startStopWheel(bool state);
     void velocityChanged(int value);
     void repaintBasedOnFiles(int value);
 signals:
     void changeSliderValue(int value);
     void finalAngle(double rotationAngle);
+    void enableControls();
 protected:
     void paintEvent(QPaintEvent *) override;
 private:
     QTimer *timer;
+    QTimer *controlTimer;
     double rotationAngle;
 
     int filesCount = 60;

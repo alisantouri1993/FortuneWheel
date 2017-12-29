@@ -21,6 +21,8 @@ public:
     ~MainWindow();
 public slots:
     void changeSliderValue(int value);
+    void enableControls();
+    void finalAngle(double rotationAngle);
 signals:
     void startStopWheel(bool state);
     void velocityChanged(int value);

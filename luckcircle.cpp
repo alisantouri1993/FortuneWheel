@@ -6,6 +6,10 @@ LuckCircle::LuckCircle(QWidget *parent) : QWidget(parent)
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this,&LuckCircle::updateHandler);
 
+    controlTimer = new QTimer(this);
+    controlTimer->setInterval(2000);
+    connect(controlTimer,&QTimer::timeout,this ,&LuckCircle::reduceSpeed);
+
     //timer->setInterval(1000);
     //timer->start();
 
@@ -25,18 +29,30 @@ void LuckCircle::updateHandler()
     update();
 }
 
+void LuckCircle::reduceSpeed()
+{
+    qsrand(qrand());
+    timer->setInterval(timer->interval() * (fmod(double(qrand()),1.1)+1));
+    if(timer->interval() >= 3000)
+    {
+        emit changeSliderValue(1);
+        enableControls();
+        timer->stop();
+        controlTimer->stop();
+        emit finalAngle(rotationAngle);
+    }
+}
+
 void LuckCircle::startStopWheel(bool state)
 {
     if(state)
     {
         timer->start();
         timer->setInterval(1000);
-        emit changeSliderValue(1);
     }
     else
     {
-        timer->stop();
-        emit changeSliderValue(0);
+        controlTimer->start();
     }
 }
 
