@@ -56,7 +56,7 @@ void MainWindow::enableControls()
 
 void MainWindow::finalAngle(double rotationAngle)
 {
-    if(!map.isEmpty())
+    if(!map.isEmpty() && !map[rotationAngle].isEmpty())
     {
         QString openedFile =path +"\\"+map[rotationAngle];
         movieProcess->start("C:/KMPlayer/KMPlayer.exe",QStringList()<<openedFile);
