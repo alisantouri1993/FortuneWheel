@@ -6,6 +6,7 @@
 #include "QDebug"
 #include <QFileDialog>
 #include <QCollator>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
@@ -14,19 +15,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     qApp->installEventFilter(this);
     init();
+    loadSettings();
     createObjects();
     connectObjects();
+    labelTimer->start();
+
 }
 
 void MainWindow::init()
 {
     stringListModel = new QStringListModel(this);
     ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    attemptsNumber = 1;
 }
 
 void MainWindow::createObjects()
 {
     movieProcess = new QProcess(this);
+
+    labelTimer   = new QTimer(this);
+    labelTimer->setInterval(1500);
 }
 
 void MainWindow::connectObjects()
@@ -37,6 +45,31 @@ void MainWindow::connectObjects()
     connect(this,&MainWindow::filesInfo,ui->widgetWheel,&LuckCircle::repaintBasedOnFiles);
     connect(ui->widgetWheel,&LuckCircle::enableControls,this,&MainWindow::enableControls);
     connect(ui->widgetWheel,&LuckCircle::finalAngle,this,&MainWindow::finalAngle);
+    connect(labelTimer,&QTimer::timeout,this,&MainWindow::updateLabel);
+}
+
+void MainWindow::saveSettings()
+{
+    QSettings settings("Ali","Fortune Wheel");
+
+    settings.setValue("Attempts",attemptsNumber);
+    settings.setValue("Date",date.currentDate());
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings("Ali","Fortune Wheel");
+
+    if(!settings.value("Attempts").isNull())
+        attemptsNumber = settings.value("Attempts").toInt();
+
+    if(!settings.value("Date").isNull())
+    {
+        QDate savedDate = settings.value("Date").toDate();
+        if(date.currentDate() != savedDate)
+            attemptsNumber = attemptsNumber + savedDate.daysTo(date.currentDate());
+    }
+
 }
 MainWindow::~MainWindow()
 {
@@ -63,6 +96,21 @@ void MainWindow::finalAngle(double rotationAngle)
     }
 }
 
+void MainWindow::updateLabel()
+{
+    ui->labelTodayAttempts->setText("Today : "+(date.currentDate().toString()+" , Number of Remaining Attempts: "+
+                                               QString::number(attemptsNumber)));
+    if(!ui->labelTodayAttempts->isHidden())
+        ui->labelTodayAttempts->setHidden(true);
+    else
+        ui->labelTodayAttempts->setHidden(false);
+
+    if(attemptsNumber > 0)
+        ui->listView->setDisabled(false);
+    else
+        ui->listView->setDisabled(true);
+}
+
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
@@ -77,10 +125,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 ui->horizontalSliderVelocity->setDisabled(true);
                 ui->pushButtonStartStop->setChecked(false);
                 emit startStopWheel(false);
+                attemptsNumber = attemptsNumber - 1;
             }
         }
     }
     return false;
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    saveSettings();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -125,17 +179,25 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButtonStartStop_clicked(bool checked)
 {
-    if(checked)
+    if(attemptsNumber > 0)
     {
-        ui->pushButtonStartStop->setText("Stop");
-        emit startStopWheel(true);
+        if(checked)
+        {
+            ui->pushButtonStartStop->setText("Stop");
+            emit startStopWheel(true);
+        }
+        else
+        {
+            ui->pushButtonStartStop->setText("Start");
+            ui->pushButtonStartStop->setDisabled(true);
+            ui->horizontalSliderVelocity->setDisabled(true);
+            emit startStopWheel(false);
+            attemptsNumber = attemptsNumber - 1;
+        }
     }
     else
     {
-        ui->pushButtonStartStop->setText("Start");
-        ui->pushButtonStartStop->setDisabled(true);
-        ui->horizontalSliderVelocity->setDisabled(true);
-        emit startStopWheel(false);
+        QMessageBox::information(this,"Access Denied !","Your Attmepts have been reached to the Max!");
     }
 }
 

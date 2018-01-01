@@ -9,6 +9,8 @@ QT       += core gui
 
 CONFIG+=windeployqt
 
+win32:RC_ICONS += Images/Wheel.png.ico
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Circle
@@ -23,3 +25,6 @@ HEADERS  += mainwindow.h \
     luckcircle.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    circle.qrc

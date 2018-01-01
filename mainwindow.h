@@ -7,6 +7,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QProcess>
+#include <QSettings>
+#include <QDate>
 
 namespace Ui {
 class MainWindow;
@@ -23,12 +25,14 @@ public slots:
     void changeSliderValue(int value);
     void enableControls();
     void finalAngle(double rotationAngle);
+    void updateLabel();
 signals:
     void startStopWheel(bool state);
     void velocityChanged(int value);
     void filesInfo(int count);
 protected:
     bool eventFilter(QObject* obj, QEvent* event);
+    void closeEvent(QCloseEvent *) override;
 private slots:
     void on_pushButton_clicked();
     void on_pushButtonStartStop_clicked(bool checked);   
@@ -41,6 +45,8 @@ private:
     void createObjects();
     void connectObjects();
 
+    void saveSettings();
+    void loadSettings();
 private:
     Ui::MainWindow *ui;
     QString path ;
@@ -50,6 +56,10 @@ private:
     QGraphicsItem  *graphicsItem;
     QMap<int,QString> map;
     QProcess* movieProcess;
+
+    QDate date;
+    int attemptsNumber;
+    QTimer *labelTimer;
 };
 
 #endif // MAINWINDOW_H

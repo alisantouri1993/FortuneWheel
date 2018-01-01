@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Images">
+        <file>Images/Wheel.png.ico</file>
+    </qresource>
+</RCC>
