@@ -7,7 +7,7 @@ LuckCircle::LuckCircle(QWidget *parent) : QWidget(parent)
     connect(timer, &QTimer::timeout, this,&LuckCircle::updateHandler);
 
     controlTimer = new QTimer(this);
-    controlTimer->setInterval(2000);
+    controlTimer->setInterval(2300);
     connect(controlTimer,&QTimer::timeout,this ,&LuckCircle::reduceSpeed);
 
     //timer->setInterval(1000);
@@ -98,6 +98,8 @@ void LuckCircle::paintEvent(QPaintEvent *)
     painter.setFont(QFont("Arial", 5));
     painter.rotate(-90);
 
+    if(filesCount > 90 )
+        painter.setFont(QFont("Arial", 3));
     for (int j = 0; j < filesCount; ++j)
     {
         painter.drawLine(83, 0, 91,0);
