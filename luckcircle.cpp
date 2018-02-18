@@ -17,7 +17,7 @@ LuckCircle::LuckCircle(QWidget *parent) : QWidget(parent)
 
     resize(200,200);
 }
-
+///TEST-Test+test
 void LuckCircle::updateHandler()
 {
     if(rotationAngle == 360)
